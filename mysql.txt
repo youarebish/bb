@@ -1,0 +1,140 @@
+1.连接数据库
+命令： use <数据库名>
+
+2.查看表的引擎类型等状态信息
+SHOW TABLE STATUS [FROMdb_name] [LIKE 'pattern']
+
+3.当前数据库包含的表信息
+show tables;
+
+4.查看当前使用的数据库
+select database();
+
+5.删除数据库
+命令：drop database <数据库名>;
+
+6.显示所有的数据库
+命令：show databases;（注意：最后有个s）
+
+7.创建数据库
+命令：create database <数据库名>;
+
+8.建立表
+create table <表名> (<字段名1> <类型1> [,..<字段名n> <类型n>]);
+补充：根据已有的表创建新表。
+8.1 create table tab_new like tab_old; (只有表结构)
+8.2 create table tab_new as select * from tab_old; (既包含表结构，又包含表数据)
+
+9.获取表结构
+命令：
+desc 表名;
+or
+show columns from 表名;
+
+10. 删除表
+命令：drop table <表名>;
+11.更改表名
+命令：rename table 原表名 to 新表名;
+
+12.在表中增加字段
+命令：alter table 表名 add 字段 类型 其他;
+例如：alter table myclass add passtest int(4) default '0';
+
+13.插入数据
+命令：insert into <表名> [( <字段名1>[,..<字段名n > ])] values ( 值1 )[, ( 值n )];
+例如：
+insert into myclass (id, name, sex, degree, passtest) values(1, 'david', 1, 80.56, 78);
+insert into myclass values(2, 'sandy', 0, 100, 90);
+insert into myclass (id, name, sex, degree) values(3, 'renee', 0, 90.34);
+
+14.导出整个数据库
+命令：mysqldump -u 用户名 -p 数据库名 > 导出的文件名
+
+15.导出一个表
+命令：mysqldump -u 用户名 -p 数据库名 表名> 导出的文件名
+
+16.导出一个数据库结构
+命令：mysqldump -u root -p -d --add-drop-table test > test_db.sql
+-d 没有数据 --add-drop-table 在每个create 语句之前增加一个drop table
+
+17.常用source 命令
+source "路径名"+/mytest_emp_dept.sql
+
+show open tables;
+能够查看当前有那些表是打开的。In_use列表示有多少线程正在使用某张表，Name_locked表示表名是否被锁，这一般发生在Drop或Rename命令操作这张表时。
+所以这条命令不能帮助解答我们常见的问题：当前某张表是否有死锁，谁拥有表上的这个锁等。
+show open tables from database;
+show OPEN TABLES where In_use > 0;
+
+SELECT * FROM information_schema.`PROCESSLIST`;
+添加索引
+ALTER TABLE t_cms_home ADD INDEX IDX_SID(C_SID);
+
+查看表索引索引
+show INDEX from t_cms_home;
+show keys from t_u_basic;
+
+SHOW PROCESSLIST显示哪些线程正在运行
+show processlist;只列出前100条，如果想全列出请使用show full processlist;
+
+查看服务器状态。
+show status like '%lock%';
+日志：二进制文件记录
+show variables like 'log_bin';
+
+记录二进制数据的文件具体信息
+show master status;
+
+explain命令显示了mysql如何使用索引来处理select语句以及连接表
+EXPLAIN的使用方法：
+在select语句前加上explain就可以了。
+
+显示系统变量的名称和值
+show variables;
+
+显示服务器所支持的不同权限
+show privileges;
+
+显示create database 语句是否能够创建指定的数据库
+show create database database_name;
+
+显示create database 语句是否能够创建指定的数据表
+show create table table_name;
+
+显示安装以后可用的存储引擎和默认引擎。
+show engies;
+
+显示innoDB存储引擎的状态
+show innodb status;
+
+显示BDB存储引擎的日志
+show logs;
+
+显示最后一个执行的语句所产生的错误、警告和通知
+show warnings;
+
+只显示最后一个执行语句所产生的错误
+show errors
+
+18 说明：拷贝表(拷贝数据,源表名：a 目标表名：b) (Access可用)
+insert into b(a, b, c) select d,e,f from b;
+
+19.说明：跨数据库之间表的拷贝(具体数据使用绝对路径) (Access可用)
+insert into b(a, b, c) select d,e,f from b in ‘具体数据库' where 条件
+例子：..from b in '"&Server.MapPath(".")&"\data.mdb" &"' where..
+
+20、说明：between的用法,between限制查询数据范围时包括了边界值,not between不包括
+select * from table1 where time between time1 and time2
+select a,b,c, from table1 where a not between 数值1 and 数值2
+
+21、说明：一条sql 语句搞定数据库分页
+select top 10 b.* from (select top 20 主键字段,排序字段 from 表名 order by 排序字段
+desc) a,表名 b where b.主键字段 = a.主键字段 order by a.排序字段
+
+22、
+select * from table1, table2 where table1.id *= table2.id --------
+左外部连接， table1 中有的而 table2 中没有得以 null表示 table1.id =* table2.id -------- 右外部连接
+
+23、delete from table_name where Stockid = 3
+truncate table_name ----------- 删除表中所有行，仍保持表的完整性
+drop table table_name --------------- 完全删除表
