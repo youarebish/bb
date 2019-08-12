@@ -1,0 +1,65 @@
+backstores ,后端存储
+对应到服务端提供实际存储空间的设备,需要一个管理设备
+
+target ,磁盘组
+是客户端的访问目标,作为一个框架,由多个lun组成
+(就是访问时第一眼看到的)
+
+lun,逻辑单元
+每一个lun需要关联到某一个后端存储设备,在客户端会视为一块虚拟硬盘
+相当于一个动作
+
+   (冰箱------->纸质的箱子)     木质的箱子
+ 这一个整体就相当于一个
+放入到纸质的箱子就相当
+   于一个动作(关联)         (相当于target,磁盘组)
+
+
+
+
+targetcli  软件包
+backstores/block   //block  ,块设备
+fileio    //文件设备
+
+backstores/block  create name=nsd(纸质的包装) dev=/dev/vda1(冰箱真正的东西)
+
+建立target磁盘组:(建立一个木质的箱子)
+
+打开磁盘组就是target,打开target就是真正的后端存储
+
+iscsi/ delete iqn.2019-07.a.b:server   //删除这个磁盘组
+
+进行lun关联(冰箱放到纸质的箱子里面)
+
+iscsi/iqn.2019-07.com.example:setver0/tpg1(目标放到哪里)/luns create /backstores/block/nsd    //把nsd放到箱子里面
+
+设置一个访问控制,就相当于设置谁来拿这个快递,拆开快递
+
+iscsi/iqn.2019-07.com.example:setver0/tpg1/acls create iqn.2019-07.com.example:desktop0
+
+设置访问 iscsi的开放共享的访问端口
+
+iscsi/iqn.2019-07.com.example:setver0/tpg1/portals create 172.25.0.11
+默认端口是3260
+
+客户端:
+配置客户端生成的名字
+yum -y install iscsi-initiator-utils.i686
+
+~]# cat /etc/iscsi/initiatorname.iscsi
+InitiatorName=iqn.2019-07.com.example:desktop0
+
+客户端刷新新申城的名字
+
+~]# systemctl restart iscsid
+Warning: Unit file of iscsid.service changed on disk, 'systemctl daemon-reload' recommended. //要启动服务必须先运行systemctl daemon-reload
+ ~]# systemctl daemon-reload
+ ~]# systemctl restart iscsid
+
+
+~]# iscsiadm --mode discoverydb --type sendtargets --portal 172.25.0.11 --discover    //指定服务段的地址
+
+找不到这台主机,先看看防火墙是否关闭
+
+
+
