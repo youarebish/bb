@@ -1,0 +1,9 @@
+---
+- hosts: all
+  remote_user: root
+  vars: 
+    username: xx
+  tasks: 
+    - user:
+        name: "{{username}}"
+    - shell: echo 123456 | passwd --stdin "{{username}}"
