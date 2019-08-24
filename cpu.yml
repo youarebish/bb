@@ -1,0 +1,17 @@
+---
+- hosts: web
+  remote_user: root
+  tasks:
+    - shell: uptime | awk '{printf("%.2f",$(NF-2))}'
+      register: hh
+    - service:
+         name: httpd
+         state: stopped
+      when: hh.stdout|float >  0.6
+    - shell: uptime | awk '{printf("%.2f",$(NF-2))}'
+      register: hh
+    - service:
+         name: httpd
+         state: restarted
+      when: hh.stdout|float <  0.6
+#当负载超过0.6时停止httpd服务,小于0.6时启动httpd服务
