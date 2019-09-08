@@ -1,0 +1,9 @@
+---
+- hosts: web
+  remote_user: root
+  tasks:
+    - shell: mkdir /var/tmp/cache
+      ignore_errors: True
+    - service:
+        name: httpd
+        state: restarted

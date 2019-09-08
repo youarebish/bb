@@ -1,0 +1,27 @@
+---
+- hosts: web
+  remote_user: root
+  tasks:
+    - name: adduser "{{item}}"
+      user:
+        name: "{{item.name}}"
+        group: "{{item.group}}"
+        password: "{{item.password|password_hash('sha512')}}"
+      with_items: 
+        - 
+          name: "nb"
+          group: "bin"
+          password: "123456"
+        - 
+          name: "dd"
+          group: "daemon"
+          password: "654321"
+        - 
+          name: "jj"
+          group: "mail"
+          password: "123qqq...A"
+        - 
+          name: "xx"
+          group: "root"
+          password: "a"
+

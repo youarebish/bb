@@ -1,0 +1,26 @@
+---
+- hosts: web
+  remote_user: root
+  tasks:
+    - copy:
+        src: httpd.conf
+        dest: /etc/httpd/conf/httpd.conf
+        owner: root
+        group: root
+        mode: 0644
+      tags: abc
+      notify:
+        - reload apache
+    - copy:
+        src: index.html
+        dest: /var/www/html/index.html
+        owner: apache
+        group: apache
+        mode: 0644
+      tags: bcd
+  handlers:
+    - name: reload apache
+      service:
+        name: httpd
+        state: restarted
+
